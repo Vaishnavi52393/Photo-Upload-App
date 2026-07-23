@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: photo-app
+  labels:
+    app: photo-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: photo-app
+  template:
+    metadata:
+      labels:
+        app: photo-app
+    spec:
+      # hostPath data only exists on ONE node, so we must pin the pod there.
+      # TODO(student): replace with the name of a real node in your cluster
+      #   kubectl get nodes
+      nodeSelector:
+        kubernetes.io/hostname: CHANGE-ME-node-name
+
+      containers:
+        - name: photo-app
+          image: photo-app:latest        # TODO(student): build & push this image
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: photo-storage
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 300m
+              memory: 256Mi
+
+      volumes:
+        - name: photo-storage
+          hostPath:
+            # TODO(student): pick a path on the node's filesystem
+            path: /mnt/k8s-data/photo-app
+            # DirectoryOrCreate: create the dir on the node if it doesn't exist yet
+            type: DirectoryOrCreate
