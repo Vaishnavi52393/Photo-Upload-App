@@ -18,7 +18,7 @@ spec:
       # TODO(student): replace with the name of a real node in your cluster
       #   kubectl get nodes
       nodeSelector:
-        kubernetes.io/hostname: CHANGE-ME-node-name
+        kubernetes.io/hostname: node01
 
       containers:
         - name: photo-app
